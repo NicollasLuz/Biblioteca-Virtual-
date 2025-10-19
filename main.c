@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 typedef struct {
-    char titulo[100];
+    char titulo[50];
     char autor[50];
     char genero[50];
     int ano;
@@ -11,19 +12,55 @@ typedef struct {
 
 void emprestimo()
 {
+    char lixo;
+    int sel = 0;
     int linha = 1;
     Catalogo livro;
-    char inf[100];
     FILE *arq;
+    FILE *fp = fopen("temp.txt","w");
     arq = fopen("catalogo.txt","r");
     
-    while(fscanf(arq,"%[^0-9] %d %d", inf, &livro.ano, &livro.quantidade) != EOF)
+    //Mostra o catálogo para o usuario
+    printf("Livros disponíveis:\n\n");
+    while(fscanf(arq,"%[^|] %c %[^|] %c %[^|] %c %d %c %d", livro.titulo, &lixo, livro.autor, &lixo, livro.genero, &lixo, &livro.ano, &lixo, &livro.quantidade) != EOF)
     {
-        printf("%s| Ano de lançamento: %d | Quantidade Disponível: %d | (%d)", inf, livro.ano, livro.quantidade, linha);
+        printf("%s| %s| %s| Ano de lançamento: %d | Quantidade Disponível: %d | (%d)", livro.titulo, livro.autor, livro.genero, livro.ano, livro.quantidade, linha);
         linha++;
+    }
+    rewind(arq);
+    int contador = 1;
+    
+    printf("\n\nDigite a opção do livro que você quer emprestar\n");
+    scanf("%d", &sel);
+    
+    //Menu pra escolha de livro do usuario e Salva a nova quantidade de livros disponível
+    while(fscanf(arq,"%[^|] %c %[^|] %c %[^|] %c %d %c %d", livro.titulo, &lixo, livro.autor, &lixo, livro.genero, &lixo, &livro.ano, &lixo, &livro.quantidade) != EOF)
+    {
+        if(sel == contador && livro.quantidade > 0){
+            livro.quantidade--;
+            //Calcula o tempo daqui 1 semana e retorna para o usuario como data de devolução
+            time_t tempo_atual = time(NULL);
+            time_t tempo_futuro = tempo_atual + (7 * 24 * 60 * 60);
+            struct tm *info_tempo_futuro = localtime(&tempo_futuro);
+            char tempofuturo[50];
+            strftime(tempofuturo, sizeof(tempofuturo), "%d/%m/%Y", info_tempo_futuro);
+    
+            printf("\nEmpréstimo realizado com sucesso\nData para devolução %s",tempofuturo);
+        }
+        if(sel == contador && livro.quantidade == 0){
+            printf("Livro indisponível");
+        }
+        fprintf(fp,"%s | %s | %s | %d | %d", livro.titulo, livro.autor, livro.genero, livro.ano, livro.quantidade);
+        contador++;
     }
     
     fclose(arq);
+    fclose(fp);
+    
+    remove("catalogo.txt");
+    rename("temp.txt", "catalogo.txt");
+    
+
 }
 
 void registrarlivro()
@@ -37,7 +74,7 @@ void registrarlivro()
     } catalogo;
     catalogo livro;
 
-    printf("Informe as informações para o catálogo do livro:\n");
+    printf("Informe os dados do livro para o catálogo:\n");
     printf("Título: ");
     scanf(" %[^\n]", livro.titulo);
     printf("Autor: ");
@@ -49,7 +86,7 @@ void registrarlivro()
     printf("Quantidade disponível: ");
     scanf("%d", &livro.quantidade);
     
-    fprintf(fp, "\n%s %s %s %d %d", livro.titulo, livro.autor, livro.genero, livro.ano, livro.quantidade);
+    fprintf(fp, "\n%s | %s | %s | %d | %d", livro.titulo, livro.autor, livro.genero, livro.ano, livro.quantidade);
     
     fclose(fp);
 }
