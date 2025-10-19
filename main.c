@@ -29,6 +29,7 @@ void emprestimo()
     }
     rewind(arq);
     int contador = 1;
+    linha--;
     
     printf("\n\nDigite a opção do livro que você quer emprestar\n");
     scanf("%d", &sel);
@@ -48,10 +49,15 @@ void emprestimo()
             printf("\nEmpréstimo realizado com sucesso\nData para devolução %s",tempofuturo);
         }
         if(sel == contador && livro.quantidade == 0){
-            printf("Livro indisponível");
+            printf("\nLivro indisponível");
         }
-        fprintf(fp,"%s | %s | %s | %d | %d", livro.titulo, livro.autor, livro.genero, livro.ano, livro.quantidade);
+       
+        fprintf(fp,"%s|%s|%s|%d|%d", livro.titulo, livro.autor, livro.genero, livro.ano, livro.quantidade);
         contador++;
+    }
+    
+    if(sel > linha){
+        printf("\nOpção invalida");
     }
     
     fclose(arq);
@@ -59,8 +65,6 @@ void emprestimo()
     
     remove("catalogo.txt");
     rename("temp.txt", "catalogo.txt");
-    
-
 }
 
 void registrarlivro()
