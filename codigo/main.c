@@ -1,220 +1,102 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
-#include <windows.h>
-
-int contagemUsuario = 0; 
-/*
-    serve pro RF006 para que o adm vizualize a quantidade 
-    e os usuários castrados e pra gerenciar qual posição do 
-    vetor a conta vai ficar armazenada
-    struct Conta contas[50];
-*/
-int contagemPassagemEmail = 0, conatgemPassagemUserName = 0; 
-char usuarioLogado[100];
+#include <time.h>
 
 typedef struct {
-    char nomeUsuario[100];
-    char email[100];
-    char senha[50];
-    int numeroId;
-} Conta;
+    char titulo[50];
+    char autor[50];
+    char genero[50];
+    int ano;
+    int quantidade;
+} Catalogo;
 
-Conta contas[50];
-
-void limpar_Tela(){
-    system("cls");
-}
-
-int encerrar_Codigo(){
-    for (int i = 0; i < 3; i++){
-        printf("Finalizando programa\n");
-        limpar_Tela();
-        printf("Finalizando programa.\n");
-        Sleep(500);
-        limpar_Tela();
-        printf("Finalizando programa..\n");
-        Sleep(500);
-        limpar_Tela();
-        printf("Finalizando programa...\n");
-        Sleep(500);
-        limpar_Tela();
-    }
-    return 1;
-}
-
-void validacao_Email(char email[100]){
-    contagemPassagemEmail++;
-    printf("Digite o email: ");
-    scanf("%s", email);
-
-    for (int i = 0; i < strlen(email); i++){
-        if (email[i] == '@'){
-            contagemPassagemEmail = -26;
-        } 
-    }
-
-    if (contagemPassagemEmail != -26){
-        limpar_Tela();
-        printf("Email invalido!\n");
-        validacao_Email(email);
-    }
-}
-
-void validacao_Nome_Usuario(char nomeUsuario[100]){
-    int nomeValido = 0;
+void emprestimo()
+{
+    char lixo;
+    int sel = 0;
+    int linha = 1;
+    Catalogo livro;
+    FILE *arq;
+    FILE *fp = fopen("temp.txt","w");
+    arq = fopen("catalogo.txt","r");
     
-    while (!nomeValido) {
-        printf("Digite o nome de usuario: ");
-        scanf("%s", nomeUsuario);
-        
-        nomeValido = 1; 
-        
-        for (int i = 0; i < contagemUsuario + 1; i++){
-            if (strcmp(nomeUsuario, contas[i].nomeUsuario) == 0){
-                limpar_Tela();
-                printf("Esse nome de usuario ja existe! Insira outro\n");
-                nomeValido = 0; 
-                break;
-            }
+    //Mostra o catálogo para o usuario
+    printf("Livros disponíveis:\n\n");
+    while(fscanf(arq,"%[^|] %c %[^|] %c %[^|] %c %d %c %d", livro.titulo, &lixo, livro.autor, &lixo, livro.genero, &lixo, &livro.ano, &lixo, &livro.quantidade) != EOF)
+    {
+        printf("%s| %s| %s| Ano de lançamento: %d | Quantidade Disponível: %d | (%d)", livro.titulo, livro.autor, livro.genero, livro.ano, livro.quantidade, linha);
+        linha++;
+    }
+    rewind(arq);
+    int contador = 1;
+    linha--;
+    
+    printf("\n\nDigite a opção do livro que você quer emprestar\n");
+    scanf("%d", &sel);
+    
+    //Menu pra escolha de livro do usuario e Salva a nova quantidade de livros disponível
+    while(fscanf(arq,"%[^|] %c %[^|] %c %[^|] %c %d %c %d", livro.titulo, &lixo, livro.autor, &lixo, livro.genero, &lixo, &livro.ano, &lixo, &livro.quantidade) != EOF)
+    {
+        if(sel == contador && livro.quantidade > 0){
+            livro.quantidade--;
+            //Calcula o tempo daqui 1 semana e retorna para o usuario como data de devolução
+            time_t tempo_atual = time(NULL);
+            time_t tempo_futuro = tempo_atual + (7 * 24 * 60 * 60);
+            struct tm *info_tempo_futuro = localtime(&tempo_futuro);
+            char tempofuturo[50];
+            strftime(tempofuturo, sizeof(tempofuturo), "%d/%m/%Y", info_tempo_futuro);
+    
+            printf("\nEmpréstimo realizado com sucesso\nData para devolução %s",tempofuturo);
         }
-    }
-}
-
-void criarConta(Conta *conta) {
-    validacao_Nome_Usuario(conta ->nomeUsuario);
-    
-    validacao_Email(conta->email);
-    
-    printf("Digite a senha: ");
-    scanf("%s", conta->senha);
-    contagemUsuario++;
-    conta->numeroId = contagemUsuario;
-}
-
-int menu_Principal();
-void menu_Biblioteca();
-
-void fazer_Login(){
-    char nomeusuario[100], senhaUsuario[100];
-    int entrou = 0;
-
-    printf("Digite o seu userName: ");
-    scanf("%s", nomeusuario);
-
-    printf("Digite a senha: ");
-    scanf("%s", senhaUsuario);
-
-    for (int i = 0; i < contagemUsuario + 1; i++){
-        if (strcmp(nomeusuario, contas[i].nomeUsuario) == 0){
-            if (strcmp(senhaUsuario, contas[i].senha) == 0){
-                strcpy(usuarioLogado, nomeusuario);
-                //puxar tela Biblioteca
-                printf("funcionou essa merda vai pro menu agr");
-                menu_Biblioteca(contas[i].numeroId);
-                entrou++;
-            } 
+        if(sel == contador && livro.quantidade == 0){
+            printf("\nLivro indisponível");
         }
-    }
-    if (entrou == 0){
-        limpar_Tela();
-        printf("Usuario ou senhas incoretos!\n");
-        fazer_Login(); 
-    }
-}
-
-int Ler_Opcoes(){
-    int opcao;
-    scanf("%d", &opcao);
-    return opcao;
-}
-
-void opcoes_Menu_Biblioteca(){
-    printf("====Biblioteca Virtual====\n");
-    printf("1. Visualizar catalogo\n");
-    printf("2. Realizar emprestimo\n");
-    printf("3. Realizar devolucao\n");
-    printf("4. Consultar emprestimos\n");
-    printf("5. Conta\n");
-}
-
-void opcoes_Menu_Biblioteca_Adm(){
-    opcoes_Menu_Biblioteca();
-    printf("1113. Cadastrar livro\n");
-
-}
-
-void menu_Biblioteca(int id){
-    limpar_Tela();
-
-    int opcao;
-    if (id == -99) {
-        opcoes_Menu_Biblioteca_Adm();
-        opcao = Ler_Opcoes();
-    } else {
-        opcoes_Menu_Biblioteca();
-        opcao = Ler_Opcoes();
-    }
-
-    switch (opcao) {
-    case 1:
-        /* code */
-        break;
-    case 2:
-        /* code */
-        break;
-    case 3:
-        /* code */
-        break;
-    case 4:
-        /* code */
-        break;
-    case 5:
-        /* code */
-        break;
-    case 1113:
-        /* code */
-        break;
     
-    default:
-        break;
+        fprintf(fp,"%s|%s|%s|%d|%d", livro.titulo, livro.autor, livro.genero, livro.ano, livro.quantidade);
+        contador++;
     }
+    
+    if(sel > linha){
+        printf("\nOpção invalida");
+    }
+    
+    fclose(arq);
+    fclose(fp);
+    
+    remove("catalogo.txt");
+    rename("temp.txt", "catalogo.txt");
 }
 
-int menu_Principal(){
-    int opcao;
-    limpar_Tela();
-    printf("====Biblioteca Virtual====\n");
-    printf("1. Fazer login\n");
-    printf("2. Fazer cadastro\n");
-    printf("0. Sair\n");
-    opcao = Ler_Opcoes();
-    switch (opcao) {
-    case 1:
-        fazer_Login();
-        break;
-    case 2:
-        limpar_Tela();
-        criarConta(&contas[contagemUsuario + 1]);
-        break;
-    case 0:
-        limpar_Tela();
-        encerrar_Codigo();
-        break;
+void registrarlivro()
+{
+    FILE *fp = fopen("catalogo.txt", "a"); // Abrir o arquivo para leitura
+
+    typedef struct
+    {
+        char titulo[100], autor[100], genero[100];
+        int ano, quantidade;
+    } catalogo;
+    catalogo livro;
+
+    printf("Informe os dados do livro para o catálogo:\n");
+    printf("Título: ");
+    scanf(" %[^\n]", livro.titulo);
+    printf("Autor: ");
+    scanf(" %[^\n]", livro.autor);
+    printf("Gênero: ");
+    scanf(" %[^\n]", livro.genero);
+    printf("Ano de lançamento: ");
+    scanf("%d", &livro.ano);
+    printf("Quantidade disponível: ");
+    scanf("%d", &livro.quantidade);
     
-    default:
-        printf("Opcao invalida");
-        menu_Principal();
-        break;
-    }
-    return 0;
-} 
+    fprintf(fp, "\n%s | %s | %s | %d | %d", livro.titulo, livro.autor, livro.genero, livro.ano, livro.quantidade);
+    
+    fclose(fp);
+}
 
 int main(){
-    strcpy(contas[0].nomeUsuario, "nike");
-    strcpy(contas[0].senha, "123");
-    contas[0].numeroId = -99;
+    //Eu quero eu posso https://www.youtube.com/shorts/zsjSWVcTD2Y 
 
-    menu_Principal();
     return 0;
 }
