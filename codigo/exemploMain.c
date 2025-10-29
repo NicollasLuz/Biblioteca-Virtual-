@@ -3,24 +3,18 @@
 #include <stdlib.h>
 #include <windows.h>
 
-int contagemUsuario = 0; 
 /*
+    numeroId:
     serve pro RF006 para que o adm vizualize a quantidade 
-    e os usuários castrados e pra gerenciar qual posição do 
-    vetor a conta vai ficar armazenada
-    struct Conta contas[50];
+    e os usuários castrados e pra gerenciar qual o proximo 
+    número de id que vai ser cadastrado;
 */
-int contagemPassagemEmail = 0, conatgemPassagemUserName = 0; 
-char usuarioLogado[100];
+int contagemPassagemEmail = 0, conatgemPassagemUserName = 0, idUsuarioLogado; 
 
-typedef struct {
-    char nomeUsuario[100];
-    char email[100];
-    char senha[50];
-    int numeroId;
-} Conta;
-
-Conta contas[50];
+char nomeUsuario[100];
+char email[100];
+char senha[50];
+int numeroId;
 
 void limpar_Tela(){
     system("cls");
@@ -61,8 +55,9 @@ void validacao_Email(char email[100]){
     }
 }
 
-void validacao_Nome_Usuario(char nomeUsuario[100]){
+void validacao_Nome_Usuario(){
     int nomeValido = 0;
+    char nomeUsuarioValidacao[100];
     
     while (!nomeValido) {
         printf("Digite o nome de usuario: ");
@@ -70,8 +65,8 @@ void validacao_Nome_Usuario(char nomeUsuario[100]){
         
         nomeValido = 1; 
         
-        for (int i = 0; i < contagemUsuario + 1; i++){
-            if (strcmp(nomeUsuario, contas[i].nomeUsuario) == 0){
+        for (int i = 0; i < numeroId + 1; i++){
+            if (strcmp(nomeUsuario, nomeUsuarioValidacao) == 0){//mexer nessa prr aqui pra analisar no arquivo mestre quais que são os usuarios ja existentes 
                 limpar_Tela();
                 printf("Esse nome de usuario ja existe! Insira outro\n");
                 nomeValido = 0; 
@@ -81,19 +76,34 @@ void validacao_Nome_Usuario(char nomeUsuario[100]){
     }
 }
 
-void criarConta(Conta *conta) {
-    validacao_Nome_Usuario(conta ->nomeUsuario);
+void criarConta() {
+    FILE* contada = fopen("BD/contador.txt", "w");
+    FILE* mestre = fopen("BD/arquivoMestre.txt", "a+");
+    FILE *usuario;
+    char nomeArquivoUsuario[10];
+
+    validacao_Nome_Usuario(nomeUsuario);
     
-    validacao_Email(conta->email);
+    validacao_Email(email);
     
     printf("Digite a senha: ");
-    scanf("%s", conta->senha);
-    contagemUsuario++;
-    conta->numeroId = contagemUsuario;
+    scanf("%s", senha);
+
+    sprintf(nomeArquivoUsuario, "BD/usuarios/%d.txt", numeroId);
+    usuario = fopen(nomeArquivoUsuario, "w");
+
+    fprintf(mestre, "\n%d %s %s %s", numeroId, nomeUsuario, senha, email);
+    fprintf(usuario, "ID: %d \nNome de usuario: %s\nEmail: %s\nSenha: %s", numeroId, nomeUsuario, email, senha);
+    
+    numeroId++;
+    fprintf(contada, "%d", numeroId);
+    
+    fclose(contada);
+    fclose(usuario);
+    fclose(mestre);
 }
 
-int menu_Principal();
-void menu_Biblioteca();
+void menu_Biblioteca(int id);
 
 void fazer_Login(){
     char nomeusuario[100], senhaUsuario[100];
@@ -105,13 +115,12 @@ void fazer_Login(){
     printf("Digite a senha: ");
     scanf("%s", senhaUsuario);
 
-    for (int i = 0; i < contagemUsuario + 1; i++){
-        if (strcmp(nomeusuario, contas[i].nomeUsuario) == 0){
-            if (strcmp(senhaUsuario, contas[i].senha) == 0){
-                strcpy(usuarioLogado, nomeusuario);
+    for (int i = 0; i < numeroId + 1; i++){
+        if (strcmp(nomeusuario, nomeUsuario) == 0){//mexer nessa prr aqui pra analisar no arquivo mestre quais que são os usuarios batem 
+            if (strcmp(senhaUsuario, senha) == 0){//mexer nessa prr aqui pra analisar no arquivo mestre se o email com a senha bate   
                 //puxar tela Biblioteca
                 printf("funcionou essa merda vai pro menu agr");
-                menu_Biblioteca(contas[i].numeroId);
+                menu_Biblioteca(idUsuarioLogado);
                 entrou++;
             } 
         }
@@ -191,11 +200,15 @@ int menu_Principal(){
     opcao = Ler_Opcoes();
     switch (opcao) {
     case 1:
+        limpar_Tela();
         fazer_Login();
         break;
     case 2:
         limpar_Tela();
-        criarConta(&contas[contagemUsuario + 1]);
+        criarConta();
+        limpar_Tela();
+        printf("O usuario foi criado com sucesso!");
+        menu_Principal();
         break;
     case 0:
         limpar_Tela();
@@ -203,6 +216,7 @@ int menu_Principal(){
         break;
     
     default:
+        limpar_Tela();
         printf("Opcao invalida");
         menu_Principal();
         break;
@@ -211,10 +225,23 @@ int menu_Principal(){
 } 
 
 int main(){
-    strcpy(contas[0].nomeUsuario, "nike");
-    strcpy(contas[0].senha, "123");
-    contas[0].numeroId = -99;
+    FILE* contagem = fopen("BD/contador.txt", "r");
+    int ultimoId;
 
-    menu_Principal();
+    if (contagem == NULL) {
+        printf("Erro ao abrir arquivo!");
+        printf("\nPressione enter para encerrar o programa!");
+        getchar(); 
+        encerrar_Codigo();
+    } else {
+        fscanf(contagem, "%d", &numeroId);
+        fclose(contagem);
+        
+        strcpy(nomeUsuario, "nike");
+        strcpy(senha, "123");
+
+        
+        menu_Principal();
+    }
     return 0;
 }
