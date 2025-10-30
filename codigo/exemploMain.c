@@ -56,17 +56,21 @@ void validacao_Email(char email[100]){
 }
 
 void validacao_Nome_Usuario(){
-    int nomeValido = 0;
-    char nomeUsuarioValidacao[100];
+    FILE* mestre = fopen("BD/arquivoMestre.txt", "r");
+
+    int nomeValido = 0, idPreencher;//idPrencher é so pra ler no arquivo pq eu to com preguiça de dar uma volta pra ler so o nome, na vdd todos prencher no final é so pra preencher
+    char nomeUsuarioValidacao[100], senhaPreencher[50], emailPreencher[100];
     
     while (!nomeValido) {
         printf("Digite o nome de usuario: ");
         scanf("%s", nomeUsuario);
         
         nomeValido = 1; 
+
+        rewind(mestre);
         
-        for (int i = 0; i < numeroId + 1; i++){
-            if (strcmp(nomeUsuario, nomeUsuarioValidacao) == 0){//mexer nessa prr aqui pra analisar no arquivo mestre quais que são os usuarios ja existentes 
+        while (fscanf(mestre, "%d %s %s %s", &idPreencher, &nomeUsuarioValidacao, & senhaPreencher, &emailPreencher) != EOF){
+            if (strcmp(nomeUsuario, nomeUsuarioValidacao) == 0){
                 limpar_Tela();
                 printf("Esse nome de usuario ja existe! Insira outro\n");
                 nomeValido = 0; 
@@ -74,6 +78,7 @@ void validacao_Nome_Usuario(){
             }
         }
     }
+    fclose(mestre);
 }
 
 void criarConta() {

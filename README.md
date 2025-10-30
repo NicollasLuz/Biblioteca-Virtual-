@@ -5,7 +5,7 @@ Objetivo: Facilitar o gerenciamento de livros e empréstimos, controlando a disp
 
 principal
 login --
-cadastro --
+cadastro --chek
 sair --chek
 
 logado
