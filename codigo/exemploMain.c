@@ -9,12 +9,11 @@
     e os usuários castrados e pra gerenciar qual o proximo 
     número de id que vai ser cadastrado;
 */
-int contagemPassagemEmail = 0, conatgemPassagemUserName = 0, idUsuarioLogado; 
+int contagemPassagemEmail = 0, numeroId; 
 
-char nomeUsuario[100];
-char email[100];
-char senha[50];
-int numeroId;
+char nomeUsuario[100], email[100], senha[50];
+char nomeUs;
+int idUsuarioLogado;
 
 void limpar_Tela(){
     system("cls");
@@ -62,11 +61,11 @@ void validacao_Nome_Usuario(){
     char nomeUsuarioValidacao[100], senhaPreencher[50], emailPreencher[100];
     
     while (!nomeValido) {
-        printf("Digite o nome de usuario: ");
+        printf("Digite o nome de usuario(sem espacos): ");
         scanf("%s", nomeUsuario);
         
         nomeValido = 1; 
-
+        
         rewind(mestre);
         
         while (fscanf(mestre, "%d %s %s %s", &idPreencher, &nomeUsuarioValidacao, & senhaPreencher, &emailPreencher) != EOF){
@@ -111,23 +110,23 @@ void criarConta() {
 void menu_Biblioteca(int id);
 
 void fazer_Login(){
-    char nomeusuario[100], senhaUsuario[100];
+    FILE* mestre = fopen("BD/arquivoMestre.txt", "r");
+    char nomeUsuarioInserido[100], senhaUsuario[100];
     int entrou = 0;
-
+    
     printf("Digite o seu userName: ");
-    scanf("%s", nomeusuario);
-
+    scanf("%s", nomeUsuarioInserido);
+    
     printf("Digite a senha: ");
     scanf("%s", senhaUsuario);
-
-    for (int i = 0; i < numeroId + 1; i++){
-        if (strcmp(nomeusuario, nomeUsuario) == 0){//mexer nessa prr aqui pra analisar no arquivo mestre quais que são os usuarios batem 
-            if (strcmp(senhaUsuario, senha) == 0){//mexer nessa prr aqui pra analisar no arquivo mestre se o email com a senha bate   
-                //puxar tela Biblioteca
+    
+    rewind(mestre);
+    
+    while (fscanf(mestre, "%d %s %s %s", &idUsuarioLogado, &nomeUsuario, & senha, &email) != EOF){
+        if (strcmp(nomeUsuarioInserido, nomeUsuario) == 0 && strcmp(senhaUsuario, senha) == 0){//mexer nessa prr aqui pra analisar no arquivo mestre quais que são os usuarios batem 
                 printf("funcionou essa merda vai pro menu agr");
                 menu_Biblioteca(idUsuarioLogado);
                 entrou++;
-            } 
         }
     }
     if (entrou == 0){
