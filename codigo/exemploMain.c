@@ -123,8 +123,8 @@ void fazer_Login(){
     rewind(mestre);
     
     while (fscanf(mestre, "%d %s %s %s", &idUsuarioLogado, &nomeUsuario, & senha, &email) != EOF){
-        if (strcmp(nomeUsuarioInserido, nomeUsuario) == 0 && strcmp(senhaUsuario, senha) == 0){//mexer nessa prr aqui pra analisar no arquivo mestre quais que são os usuarios batem 
-                printf("funcionou essa merda vai pro menu agr");
+        if (strcmp(nomeUsuarioInserido, nomeUsuario) == 0 && strcmp(senhaUsuario, senha) == 0){
+                fclose(mestre);
                 menu_Biblioteca(idUsuarioLogado);
                 entrou++;
         }
@@ -231,7 +231,7 @@ int menu_Principal(){
 int main(){
     FILE* contagem = fopen("BD/contador.txt", "r");
     int ultimoId;
-
+    
     if (contagem == NULL) {
         printf("Erro ao abrir arquivo!");
         printf("\nPressione enter para encerrar o programa!");
@@ -240,11 +240,7 @@ int main(){
     } else {
         fscanf(contagem, "%d", &numeroId);
         fclose(contagem);
-        
-        strcpy(nomeUsuario, "nike");
-        strcpy(senha, "123");
 
-        
         menu_Principal();
     }
     return 0;

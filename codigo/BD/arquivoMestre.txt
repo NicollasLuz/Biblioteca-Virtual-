@@ -1,5 +1,4 @@
 -99 admin adminsabemuito admin@admin.com
-0 lapiseira lapiseiraMagica lapireira@gmail.com
 1 lapis arvoreRenovavel lapisFaberCastel@gmail.com
 2 computadorInteligente3000 superPC supremaciaComputacional@tango.com
 3 galinha galo pintadinha@gmial.com

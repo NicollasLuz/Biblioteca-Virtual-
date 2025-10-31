@@ -1,4 +1,0 @@
-ID: 0 
-Nome de usuario: lapiseira
-Email: lapireira@gmail.com
-Senha: lapiseiraMagica

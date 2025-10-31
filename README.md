@@ -4,7 +4,7 @@ Descrição: O sistema gerencia o acervo de uma biblioteca digital, permitindo c
 Objetivo: Facilitar o gerenciamento de livros e empréstimos, controlando a disponibilidade de exemplares e oferecendo uma forma organizada de consulta ao acervo.
 
 principal
-login --
+login --chek
 cadastro --chek
 sair --chek
 
@@ -15,7 +15,7 @@ registrar devolução
 consultar emprestimos de usuario
 conta
     atualizar dados cadastrais eu
-    deslogar eu
+    deslogar eu--chek
     exluir meu usuario eu 
     //adm excluir usuarios eu
     //adm consultar --chek
