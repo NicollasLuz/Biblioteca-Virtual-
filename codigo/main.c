@@ -59,7 +59,7 @@ void validacao_Email(char email[100]){
 void validacao_Nome_Usuario(){
     FILE* mestre = fopen("BD/arquivoMestre.txt", "r");
 
-    int nomeValido = 0, idPreencher;//idPrencher é so pra ler no arquivo pq eu to com preguiça de dar uma volta pra ler so o nome, na vdd todos prencher no final é so pra preencher
+    int nomeValido = 0, idPreencher, statusPreencher;//idPrencher é so pra ler no arquivo pq eu to com preguiça de dar uma volta pra ler so o nome, na vdd todos prencher no final é so pra preencher
     char nomeUsuarioValidacao[100], senhaPreencher[50], emailPreencher[100];
 
     while (!nomeValido) {
@@ -70,7 +70,7 @@ void validacao_Nome_Usuario(){
 
         rewind(mestre);
 
-        while (fscanf(mestre, "%d %s %s %s", &idPreencher, &nomeUsuarioValidacao, & senhaPreencher, &emailPreencher) != EOF){
+        while (fscanf(mestre, "%d %d %s %s %s", &statusPreencher, &idPreencher, &nomeUsuarioValidacao, & senhaPreencher, &emailPreencher) != EOF){
             if (strcmp(nomeUsuario, nomeUsuarioValidacao) == 0){
                 limpar_Tela();
                 printf("Esse nome de usuario ja existe! Insira outro\n");
@@ -98,7 +98,7 @@ void criarConta() {
     sprintf(nomeArquivoUsuario, "BD/usuarios/%d.txt", numeroId);
     usuario = fopen(nomeArquivoUsuario, "w");
 
-    fprintf(mestre, "\n%d %s %s %s", numeroId, nomeUsuario, senha, email);
+    fprintf(mestre, "\n%d %d %s %s %s", 0, numeroId, nomeUsuario, senha, email);
 
     numeroId++;
     fprintf(contada, "%d", numeroId);
@@ -136,7 +136,6 @@ void fazer_Login(){
         fazer_Login();
     }
 }
-
 
 int Ler_Opcoes(){
     int opcao;
@@ -489,8 +488,63 @@ void consultarEmprestimo(int id)
     menu_Biblioteca(id);
 }
 
+void menu_Conta();
+
 void atualizar_Dados_Cadastrais(){
-    
+    FILE *mestre = fopen("BD/arquivoMestre.txt", "r"), *mestreTemp;
+    mestreTemp = fopen("BD/mestreTemp.txt", "w");
+
+    char nomeTemp[100], senhaTemp[50], emailTemp[100], teste[21] ="BD/arquivoMestre.txt";
+    int autorizacao, idTemp, statusUsuario, opcao;
+
+    printf("O que voce deseja alterar? <nome = 0 / senha = 1 / email = 2>: ");
+    opcao = Ler_Opcoes();
+    switch (opcao) {
+    case 0:
+        validacao_Nome_Usuario();
+        break;
+    case 1:
+        printf("Insira a nova senha: ");
+        scanf("%s", senha);
+        break;
+    case 2:
+        printf("Insira o novo email: ");
+        scanf("%s", email);
+        break;
+    default:
+        printf("Opcao inexistente!!");
+        continuar();
+        atualizar_Dados_Cadastrais();
+        break;
+    }
+
+    printf("\nTem certeza que voce deseja alterar o usuario?<sim = 0/ nao = 1\n");
+    scanf("%d", &autorizacao);
+
+    if (autorizacao == 0){
+            while (fscanf(mestre, "%d %d %s %s %s", &statusUsuario, &idTemp, &nomeTemp, &senhaTemp, &emailTemp) != EOF){
+                if(idUsuarioLogado != idTemp){
+                    fprintf(mestreTemp, "%d %d %s %s %s\n", statusUsuario, idTemp, nomeTemp, senhaTemp, emailTemp);
+                } else {
+                    fprintf(mestreTemp, "%d %d %s %s %s\n", statusUsuario, idTemp, nomeUsuario, senha, email);
+                }
+            }
+            
+            fclose(mestre);
+            fclose(mestreTemp);
+            
+            if (remove("BD/arquivoMestre.txt") == 0 && rename("BD/mestreTemp.txt", "BD/arquivoMestre.txt") == 0) {
+                printf("O usuario foi atualizado com sucesso!");
+                continuar();
+                menu_Conta();
+            } else {
+                printf("Erro ao substituir o arquivo mestre!\n");
+                continuar();
+                menu_Conta();
+            }
+    } else{
+        menu_Conta();
+    }
 }
 
 void deslogar(){
@@ -501,14 +555,13 @@ void deslogar(){
     menu_Principal();
 }
 
-void menu_Conta();
-
 void usuario_Excluir_Usuario(int id){
+    FILE *mestre = fopen("BD/arquivoMestre.txt", "r"), *mestreTemp;
+    mestreTemp = fopen("BD/mestreTemp.txt", "w");
+
     char nomeArquivoUsuarioExcluir[20], nomeTemp[100], senhaTemp[50], emailTemp[100], teste[21] ="BD/arquivoMestre.txt";
     int autorizacao, idTemp, statusUsuario;
-    FILE *mestre = fopen("BD/arquivoMestre.txt", "r"), *mestreTemp;
 
-    mestreTemp = fopen("BD/mestreTemp.txt", "w");
     sprintf(nomeArquivoUsuarioExcluir, "BD/usuarios/%d.txt", idUsuarioLogado);
 
     printf("\nTem certeza que voce deseja excluir o usuario?<sim = 0/ nao = 1>: ");
@@ -551,15 +604,15 @@ void usuario_Excluir_Usuario(int id){
 }
 
 void adm_Excluir_Usuarios(){
+    FILE *mestre = fopen("BD/arquivoMestre.txt", "r"), *mestreTemp;
+    mestreTemp = fopen("BD/mestreTemp.txt", "w");
+
     char nomeArquivoUsuarioExcluir[20], nomeTemp[100], senhaTemp[50], emailTemp[100], teste[21] ="BD/arquivoMestre.txt";
     int autorizacao, idTemp, statusUsuario, idExcluir;
-    FILE *mestre = fopen("BD/arquivoMestre.txt", "r"), *mestreTemp;
-
-    mestreTemp = fopen("BD/mestreTemp.txt", "w");
     
     printf("Digite o id do usuario em que voce deseja excluir: ");
     scanf("%d", &idExcluir);
-    
+
     sprintf(nomeArquivoUsuarioExcluir, "BD/usuarios/%d.txt", idExcluir);
 
     printf("\nTem certeza que voce deseja excluir esse usuario?<sim = 0/ nao = 1>: ");

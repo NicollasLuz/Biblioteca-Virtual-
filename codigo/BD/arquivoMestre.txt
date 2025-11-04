@@ -1,6 +1,7 @@
 0 -99 admin adminsabemuito admin@admin.com
 0 1 lapis arvoreRenovavel lapisFaberCastel@gmail.com
 0 2 computadorInteligente3000 superPC supremaciaComputacional@tango.com
-1 3 galinha galo pintadinha@gmial.com
+0 3 galinha galo pintadinha@gmial.com
 0 4 mareleide marieleide123 marileide@yahoo.com.br
-0 5 pedrinho pedrao pedrinhoChave@gmail.com
+0 5 lente quadrado retangulo@gmail.com
+0 6 BestSeller goiania a249420@dac.unicamp.br
