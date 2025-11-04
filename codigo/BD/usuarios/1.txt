@@ -1,4 +1,0 @@
-ID: 1
-Nome de usuario: lapis
-Email: lapisFaberCastel@gmail.com
-Senha: arvoreRenovavel

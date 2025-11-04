@@ -1,4 +1,0 @@
-ID: 3 
-Nome de usuario: galinha
-Email: pintadinha@gmial.com
-Senha: galo

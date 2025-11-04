@@ -15,6 +15,12 @@ void limpar_Tela(){
     system("cls");
 }
 
+void continuar(){
+    printf("\nPressione para continuar!");
+    fgetchar();
+    fgetchar();
+}
+
 int encerrar_Codigo(){
     for (int i = 0; i < 3; i++){
         printf("Finalizando programa\n");
@@ -80,7 +86,7 @@ void criarConta() {
     FILE* contada = fopen("BD/contador.txt", "w");
     FILE* mestre = fopen("BD/arquivoMestre.txt", "a+");
     FILE *usuario;
-    char nomeArquivoUsuario[10];
+    char nomeArquivoUsuario[20];
 
     validacao_Nome_Usuario(nomeUsuario);
 
@@ -93,7 +99,6 @@ void criarConta() {
     usuario = fopen(nomeArquivoUsuario, "w");
 
     fprintf(mestre, "\n%d %s %s %s", numeroId, nomeUsuario, senha, email);
-    fprintf(usuario, "ID: %d \nNome de usuario: %s\nEmail: %s\nSenha: %s", numeroId, nomeUsuario, email, senha);
 
     numeroId++;
     fprintf(contada, "%d", numeroId);
@@ -108,7 +113,7 @@ void menu_Biblioteca(int id);
 void fazer_Login(){
     FILE* mestre = fopen("BD/arquivoMestre.txt", "r");
     char nomeUsuarioInserido[100], senhaUsuario[100];
-    int entrou = 0;
+    int entrou = 0, statusUsuario;
 
     printf("Digite o seu userName: ");
     scanf("%s", nomeUsuarioInserido);
@@ -118,11 +123,11 @@ void fazer_Login(){
 
     rewind(mestre);
 
-    while (fscanf(mestre, "%d %s %s %s", &idUsuarioLogado, &nomeUsuario, & senha, &email) != EOF){
-        if (strcmp(nomeUsuarioInserido, nomeUsuario) == 0 && strcmp(senhaUsuario, senha) == 0){//mexer nessa prr aqui pra analisar no arquivo mestre quais que são os usuarios batem
-                printf("funcionou essa merda vai pro menu agr");
-                menu_Biblioteca(idUsuarioLogado);
-                entrou++;
+    while (fscanf(mestre, "%d %d %s %s %s", &statusUsuario, &idUsuarioLogado, &nomeUsuario, & senha, &email) != EOF){
+        if (strcmp(nomeUsuarioInserido, nomeUsuario) == 0 && strcmp(senhaUsuario, senha) == 0 && statusUsuario == 0){
+            fclose(mestre);
+            menu_Biblioteca(idUsuarioLogado);
+            entrou++;
         }
     }
     if (entrou == 0){
@@ -183,7 +188,8 @@ int menu_Principal(){
 
     default:
         limpar_Tela();
-        printf("Opcao invalida");
+        printf("Opcao inexistente!!");
+        continuar();
         menu_Principal();
         break;
     }
@@ -492,15 +498,107 @@ void deslogar(){
     strcpy(nomeUsuario, "\0");
     strcpy(senha, "\0");
     strcpy(email, "\0");
+    menu_Principal();
 }
 
-void usuario_Excluir_Usuario(){
-    FILE* mestre = fopen("BD/arquivoMestre.txt", "a+");
-    fclose(mestre);
+void menu_Conta();
+
+void usuario_Excluir_Usuario(int id){
+    char nomeArquivoUsuarioExcluir[20], nomeTemp[100], senhaTemp[50], emailTemp[100], teste[21] ="BD/arquivoMestre.txt";
+    int autorizacao, idTemp, statusUsuario;
+    FILE *mestre = fopen("BD/arquivoMestre.txt", "r"), *mestreTemp;
+
+    mestreTemp = fopen("BD/mestreTemp.txt", "w");
+    sprintf(nomeArquivoUsuarioExcluir, "BD/usuarios/%d.txt", idUsuarioLogado);
+
+    printf("\nTem certeza que voce deseja excluir o usuario?<sim = 0/ nao = 1>: ");
+    scanf("%d", &autorizacao);
+
+    if (autorizacao == 0){
+        if (remove(nomeArquivoUsuarioExcluir) == 0){
+            while (fscanf(mestre, "%d %d %s %s %s", &statusUsuario, &idTemp, &nomeTemp, &senhaTemp, &emailTemp) != EOF){
+                if(idUsuarioLogado != idTemp){
+                    fprintf(mestreTemp, "%d %d %s %s %s\n", statusUsuario, idTemp, nomeTemp, senhaTemp, emailTemp);
+                } else {
+                    fprintf(mestreTemp, "%d %d %s %s %s\n", 1, idTemp, nomeTemp, senhaTemp, emailTemp);
+                }
+            }
+
+            fclose(mestre);
+            fclose(mestreTemp);
+
+            if (remove("BD/arquivoMestre.txt") == 0 && rename("BD/mestreTemp.txt", "BD/arquivoMestre.txt") == 0) {
+                printf("O usuario foi excluido com sucesso!");
+                continuar();
+                menu_Principal();
+            } else {
+                printf("Erro ao substituir o arquivo mestre!\n");
+                continuar();
+                menu_Conta();
+            }
+
+        } else {
+            fclose(mestre);
+            fclose(mestreTemp);
+            remove("BD/mestreTemp.txt");
+            printf("Erro ao excluir o usuario!");
+            continuar();
+            menu_Conta();
+        }
+    } else{
+        menu_Conta();
+    }
 }
 
 void adm_Excluir_Usuarios(){
+    char nomeArquivoUsuarioExcluir[20], nomeTemp[100], senhaTemp[50], emailTemp[100], teste[21] ="BD/arquivoMestre.txt";
+    int autorizacao, idTemp, statusUsuario, idExcluir;
+    FILE *mestre = fopen("BD/arquivoMestre.txt", "r"), *mestreTemp;
+
+    mestreTemp = fopen("BD/mestreTemp.txt", "w");
     
+    printf("Digite o id do usuario em que voce deseja excluir: ");
+    scanf("%d", &idExcluir);
+    
+    sprintf(nomeArquivoUsuarioExcluir, "BD/usuarios/%d.txt", idExcluir);
+
+    printf("\nTem certeza que voce deseja excluir esse usuario?<sim = 0/ nao = 1>: ");
+    scanf("%d", &autorizacao);
+
+    if (autorizacao == 0){
+        if (remove(nomeArquivoUsuarioExcluir) == 0){
+            while (fscanf(mestre, "%d %d %s %s %s", &statusUsuario, &idTemp, &nomeTemp, &senhaTemp, &emailTemp) != EOF){
+                if(idExcluir != idTemp){
+                    fprintf(mestreTemp, "%d %d %s %s %s\n", statusUsuario, idTemp, nomeTemp, senhaTemp, emailTemp);
+                } else {
+                    fprintf(mestreTemp, "%d %d %s %s %s\n", 1, idTemp, nomeTemp, senhaTemp, emailTemp);
+                }
+            }
+
+            fclose(mestre);
+            fclose(mestreTemp);
+
+            if (remove("BD/arquivoMestre.txt") == 0 && rename("BD/mestreTemp.txt", "BD/arquivoMestre.txt") == 0) {
+                printf("O usuario foi excluido com sucesso!");
+                continuar();
+                menu_Conta();
+            } else {
+                printf("Erro ao substituir o arquivo mestre!\n");
+                continuar();
+                menu_Conta();
+            }
+
+        } else {
+            fclose(mestre);
+            fclose(mestreTemp);
+            remove("BD/mestreTemp.txt");
+            printf("Erro ao excluir o usuario!");
+            continuar();
+            menu_Conta();
+        }
+    } else{
+        menu_Conta();
+    }
 }
 
 // void consultar Dados (pegar a função do BB)(){
@@ -521,11 +619,11 @@ void opcoes_Menu_Conta_Adm(){
     printf("6823. Consultar cadastros\n");
 }
 
-void menu_Conta(int id){
+void menu_Conta(){
     limpar_Tela();
     int opcao;
     
-    if (id == -99) {
+    if (idUsuarioLogado == -99) {
         opcoes_Menu_Conta_Adm();
         opcao = Ler_Opcoes();
     } else {
@@ -539,13 +637,12 @@ void menu_Conta(int id){
         break;
     case 2:
         deslogar();
-        menu_Principal();
         break;
     case 3:
-        usuario_Excluir_Usuario();
+        usuario_Excluir_Usuario(idUsuarioLogado);
         break;
     case 4:
-        menu_Biblioteca(id);
+        menu_Biblioteca(idUsuarioLogado);
         break;
     case 6822:
         adm_Excluir_Usuarios();
@@ -555,6 +652,9 @@ void menu_Conta(int id){
         break;
     
     default:
+        printf("Opcao inexistente!!");
+        continuar();
+        menu_Conta();
         break;
     }
 }
@@ -599,7 +699,9 @@ void menu_Biblioteca(int id){
         break;
 
     default:
-        printf("Opcao incorreta!!");
+        printf("Opcao inexistente!!");
+        continuar();
+        menu_Biblioteca(id);
         break;
     }
 }
