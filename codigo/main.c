@@ -381,70 +381,80 @@ void devolução(int id)
     menu_Biblioteca(id);
 }
 
-void apagarregistro()
-{
-    char lixo;
-    int sel = 0;
-    int linha = 1;
-    Catalogo livro;
-    FILE *arq = fopen("catalogo.txt","r");
-    FILE *fp = fopen("temp.txt","w");
+void apagarregistro(int id) {
+    if (id >= 0) {
+        printf("Opcao inexistente!!");
+        continuar();
+        menu_Biblioteca(id);
+    } else {
+        char lixo;
+        int sel = 0;
+        int linha = 1;
+        Catalogo livro;
+        FILE *arq = fopen("catalogo.txt","r");
+        FILE *fp = fopen("temp.txt","w");
 
-    printf("Livros no catálogo:\n\n");
-    while(fscanf(arq,"%[^|] %c %[^|] %c %[^|] %c %d %c %d", livro.titulo, &lixo, livro.autor, &lixo, livro.genero, &lixo, &livro.ano, &lixo, &livro.quantidade) != EOF)
-    {
-        printf("%s| %s| %s| Ano de lançamento: %d | Quantidade Disponível: %d | (%d)", livro.titulo, livro.autor, livro.genero, livro.ano, livro.quantidade, linha);
-        linha++;
-    }
-
-    rewind(arq);
-    int contador = 1;
-    linha--;
-    printf("\n\nDigite a opção do livro que você quer apagar:\n");
-    scanf("%d", &sel);
-
-    while(fscanf(arq,"%[^|] %c %[^|] %c %[^|] %c %d %c %d", livro.titulo, &lixo, livro.autor, &lixo, livro.genero, &lixo, &livro.ano, &lixo, &livro.quantidade) != EOF)
-    {
-        if(sel != contador){
-            fprintf(fp,"%s|%s|%s|%d|%d", livro.titulo, livro.autor, livro.genero, livro.ano, livro.quantidade);
+        printf("Livros no catálogo:\n\n");
+        while(fscanf(arq,"%[^|] %c %[^|] %c %[^|] %c %d %c %d", livro.titulo, &lixo, livro.autor, &lixo, livro.genero, &lixo, &livro.ano, &lixo, &livro.quantidade) != EOF)
+        {
+            printf("%s| %s| %s| Ano de lançamento: %d | Quantidade Disponível: %d | (%d)", livro.titulo, livro.autor, livro.genero, livro.ano, livro.quantidade, linha);
+            linha++;
         }
-        contador++;
+
+        rewind(arq);
+        int contador = 1;
+        linha--;
+        printf("\n\nDigite a opção do livro que você quer apagar:\n");
+        scanf("%d", &sel);
+
+        while(fscanf(arq,"%[^|] %c %[^|] %c %[^|] %c %d %c %d", livro.titulo, &lixo, livro.autor, &lixo, livro.genero, &lixo, &livro.ano, &lixo, &livro.quantidade) != EOF)
+        {
+            if(sel != contador){
+                fprintf(fp,"%s|%s|%s|%d|%d", livro.titulo, livro.autor, livro.genero, livro.ano, livro.quantidade);
+            }
+            contador++;
+        }
+
+        fclose(arq);
+        fclose(fp);
+
+        //Transforma o arquivo temporario com a alteração no novo catálogo e apaga o antigo arquivo
+        remove("catalogo.txt");
+        rename("temp.txt", "catalogo.txt");
     }
-
-    fclose(arq);
-    fclose(fp);
-
-    //Transforma o arquivo temporario com a alteração no novo catálogo e apaga o antigo arquivo
-    remove("catalogo.txt");
-    rename("temp.txt", "catalogo.txt");
 }
 
-void registrarLivro()
-{
-    FILE *fp = fopen("BD/catalogo.txt", "a"); // Abrir o arquivo para leitura
+void registrarLivro(int id) {
+    if (id >= 0) {
+        printf("Opcao inexistente!!");
+        continuar();
+        menu_Biblioteca(id);
+    } else {
+        FILE *fp = fopen("BD/catalogo.txt", "a"); // Abrir o arquivo para leitura
 
-    typedef struct
-    {
-        char titulo[100], autor[100], genero[100];
-        int ano, quantidade;
-    } catalogo;
-    catalogo livro;
+        typedef struct
+        {
+            char titulo[100], autor[100], genero[100];
+            int ano, quantidade;
+        } catalogo;
+        catalogo livro;
 
-    printf("Informe os dados do livro para o catálogo:\n");
-    printf("Título: ");
-    scanf(" %[^\n]", livro.titulo);
-    printf("Autor: ");
-    scanf(" %[^\n]", livro.autor);
-    printf("Gênero: ");
-    scanf(" %[^\n]", livro.genero);
-    printf("Ano de lançamento: ");
-    scanf("%d", &livro.ano);
-    printf("Quantidade disponível: ");
-    scanf("%d", &livro.quantidade);
+        printf("Informe os dados do livro para o catálogo:\n");
+        printf("Título: ");
+        scanf(" %[^\n]", livro.titulo);
+        printf("Autor: ");
+        scanf(" %[^\n]", livro.autor);
+        printf("Gênero: ");
+        scanf(" %[^\n]", livro.genero);
+        printf("Ano de lançamento: ");
+        scanf("%d", &livro.ano);
+        printf("Quantidade disponível: ");
+        scanf("%d", &livro.quantidade);
 
-    fprintf(fp, "\n%s | %s | %s | %d | %d", livro.titulo, livro.autor, livro.genero, livro.ano, livro.quantidade);
+        fprintf(fp, "\n%s | %s | %s | %d | %d", livro.titulo, livro.autor, livro.genero, livro.ano, livro.quantidade);
 
-    fclose(fp);
+        fclose(fp);
+    }
 }
 
 void consultarEmprestimo(int id)
@@ -553,7 +563,7 @@ void deslogar(){
     menu_Principal();
 }
 
-void usuario_Excluir_Usuario(int id){
+void usuario_Excluir_Usuario(){
     FILE *mestre = fopen("BD/arquivoMestre.txt", "r"), *mestreTemp;
     mestreTemp = fopen("BD/mestreTemp.txt", "w");
 
@@ -566,58 +576,55 @@ void usuario_Excluir_Usuario(int id){
     scanf("%d", &autorizacao);
 
     if (autorizacao == 0){
-        if (remove(nomeArquivoUsuarioExcluir) == 0){
-            while (fscanf(mestre, "%d %d %s %s %s", &statusUsuario, &idTemp, &nomeTemp, &senhaTemp, &emailTemp) != EOF){
-                if(idUsuarioLogado != idTemp){
-                    fprintf(mestreTemp, "%d %d %s %s %s\n", statusUsuario, idTemp, nomeTemp, senhaTemp, emailTemp);
-                } else {
-                    fprintf(mestreTemp, "%d %d %s %s %s\n", 1, idTemp, nomeTemp, senhaTemp, emailTemp);
-                }
-            }
-
-            fclose(mestre);
-            fclose(mestreTemp);
-
-            if (remove("BD/arquivoMestre.txt") == 0 && rename("BD/mestreTemp.txt", "BD/arquivoMestre.txt") == 0) {
-                printf("O usuario foi excluido com sucesso!");
-                continuar();
-                menu_Principal();
+        while (fscanf(mestre, "%d %d %s %s %s", &statusUsuario, &idTemp, &nomeTemp, &senhaTemp, &emailTemp) != EOF){
+            if(idUsuarioLogado != idTemp){
+                fprintf(mestreTemp, "%d %d %s %s %s\n", statusUsuario, idTemp, nomeTemp, senhaTemp, emailTemp);
             } else {
-                printf("Erro ao substituir o arquivo mestre!\n");
-                continuar();
-                menu_Conta();
+                fprintf(mestreTemp, "%d %d %s %s %s\n", 1, idTemp, nomeTemp, senhaTemp, emailTemp);
             }
+        }
 
+        fclose(mestre);
+        fclose(mestreTemp);
+
+        if (remove("BD/arquivoMestre.txt") == 0 && rename("BD/mestreTemp.txt", "BD/arquivoMestre.txt") == 0) {
+            printf("O usuario foi excluido com sucesso!");
+            continuar();
+            menu_Principal();
         } else {
-            fclose(mestre);
-            fclose(mestreTemp);
-            remove("BD/mestreTemp.txt");
-            printf("Erro ao excluir o usuario!");
+            printf("Erro ao substituir o arquivo mestre!\n");
             continuar();
             menu_Conta();
         }
-    } else{
+    } else {
+        fclose(mestre);
+        fclose(mestreTemp);
+        remove("BD/mestreTemp.txt");
         menu_Conta();
     }
 }
 
-void adm_Excluir_Usuarios(){
-    FILE *mestre = fopen("BD/arquivoMestre.txt", "r"), *mestreTemp;
-    mestreTemp = fopen("BD/mestreTemp.txt", "w");
+void adm_Excluir_Usuarios(int id){
+    if (id >= 0) {
+        printf("Opcao inexistente!!");
+        continuar();
+        menu_Conta();
+    } else {
+        FILE *mestre = fopen("BD/arquivoMestre.txt", "r"), *mestreTemp;
+        mestreTemp = fopen("BD/mestreTemp.txt", "w");
 
-    char nomeArquivoUsuarioExcluir[20], nomeTemp[100], senhaTemp[50], emailTemp[100];
-    int autorizacao, idTemp, statusUsuario, idExcluir;
-    
-    printf("Digite o id do usuario em que voce deseja excluir: ");
-    scanf("%d", &idExcluir);
+        char nomeArquivoUsuarioExcluir[20], nomeTemp[100], senhaTemp[50], emailTemp[100];
+        int autorizacao, idTemp, statusUsuario, idExcluir;
+        
+        printf("Digite o id do usuario em que voce deseja excluir: ");
+        scanf("%d", &idExcluir);
 
-    sprintf(nomeArquivoUsuarioExcluir, "BD/usuarios/%d.txt", idExcluir);
+        sprintf(nomeArquivoUsuarioExcluir, "BD/usuarios/%d.txt", idExcluir);
 
-    printf("\nTem certeza que voce deseja excluir esse usuario?<sim = 0/ nao = 1>: ");
-    scanf("%d", &autorizacao);
+        printf("\nTem certeza que voce deseja excluir esse usuario?<sim = 0/ nao = 1>: ");
+        scanf("%d", &autorizacao);
 
-    if (autorizacao == 0){
-        if (remove(nomeArquivoUsuarioExcluir) == 0){
+        if (autorizacao == 0){
             while (fscanf(mestre, "%d %d %s %s %s", &statusUsuario, &idTemp, &nomeTemp, &senhaTemp, &emailTemp) != EOF){
                 if(idExcluir != idTemp){
                     fprintf(mestreTemp, "%d %d %s %s %s\n", statusUsuario, idTemp, nomeTemp, senhaTemp, emailTemp);
@@ -638,63 +645,62 @@ void adm_Excluir_Usuarios(){
                 continuar();
                 menu_Conta();
             }
-
-        } else {
+        } else{
             fclose(mestre);
             fclose(mestreTemp);
-            remove("BD/mestreTemp.txt");
-            printf("Erro ao excluir o usuario!");
-            continuar();
             menu_Conta();
         }
-    } else{
-        fclose(mestre);
-        fclose(mestreTemp);
-        menu_Conta();
     }
 }
 
 void consultar_Cadastros(int id){
-    FILE *mestre = fopen("BD/arquivoMestre.txt", "r");
-
-    char nomeTemp[100], senhaTemp[50], emailTemp[100];
-    int idTemp, statusUsuarioTemp;
-
-    if (mestre == NULL)
-        printf("Erro ao abrir o arquivo de cadastros ");
-
-    limpar_Tela();
-
-    if(id < 0){
-        while(fscanf(mestre, "%d %d %s %s %s ", &statusUsuarioTemp, &idTemp, nomeTemp, senhaTemp, emailTemp) != EOF){
-            printf("Status: %d | ID: %d | Nome: %s | Email: %s\n", statusUsuarioTemp, idTemp, nomeTemp, emailTemp);
-        }
-        fclose(mestre);
-        continuar();
-        menu_Conta();
-    }
-    else {
+    if (id >= 0) {
         printf("Opcao inexistente!!");
         continuar();
         menu_Conta();
+    } else {
+        FILE *mestre = fopen("BD/arquivoMestre.txt", "r");
+
+        char nomeTemp[100], senhaTemp[50], emailTemp[100];
+        int idTemp, statusUsuarioTemp;
+
+        if (mestre == NULL)
+            printf("Erro ao abrir o arquivo de cadastros ");
+
+        limpar_Tela();
+
+        if(id < 0){
+            while(fscanf(mestre, "%d %d %s %s %s ", &statusUsuarioTemp, &idTemp, nomeTemp, senhaTemp, emailTemp) != EOF){
+                printf("Status: %d | ID: %d | Nome: %s | Email: %s\n", statusUsuarioTemp, idTemp, nomeTemp, emailTemp);
+            }
+            fclose(mestre);
+            continuar();
+            menu_Conta();
+        }
+        else {
+            printf("Opcao inexistente!!");
+            continuar();
+            menu_Conta();
+        }
     }
 }
-void validacao_Id(){
+
+int validacao_Id(){
     FILE* mestre = fopen("BD/arquivoMestre.txt", "r");
 
-    int idValido = 0, idValidacao, statusPreencher;//idPrencher é so pra ler no arquivo pq eu to com preguiça de dar uma volta pra ler so o nome, na vdd todos prencher no final é so pra preencher
+    int idValido = 0, idValidacao, statusPreencher, id;//idPrencher é so pra ler no arquivo pq eu to com preguiça de dar uma volta pra ler so o nome, na vdd todos prencher no final é so pra preencher
     char nomeUsuarioValidacao[100], senhaPreencher[50], emailPreencher[100];
 
     while (!idValido) {
         printf("Insira o id do usuario (se for usuario adm inserir id < 0 e > -100)");
-        scanf("%d", &numeroId);
+        scanf("%d", &id);
 
         idValido = 1;
 
         rewind(mestre);
 
         while (fscanf(mestre, "%d %d %s %s %s", &statusPreencher, &idValidacao, &nomeUsuarioValidacao, & senhaPreencher, &emailPreencher) != EOF){
-            if (numeroId == idValidacao){
+            if (id == idValidacao){
                 limpar_Tela();
                 printf("Esse id ja existe! Insira outro\n");
                 idValido = 0;
@@ -703,38 +709,46 @@ void validacao_Id(){
         }
     }
     fclose(mestre);
+    return id;
 }
 
 void adm_Criar_Comta(int id){
-    FILE* contada = fopen("BD/contador.txt", "w");
-    FILE* mestre = fopen("BD/arquivoMestre.txt", "a+");
-    FILE *usuario;
-    char nomeArquivoUsuario[20];
+    if (id >= 0) {
+        printf("Opcao inexistente!!");
+        continuar();
+        menu_Conta();
+    } else {
+        FILE* contada = fopen("BD/contador.txt", "w");
+        FILE* mestre = fopen("BD/arquivoMestre.txt", "a+");
+        FILE *usuario;
+        char nomeArquivoUsuario[20];
+        int idCriar;
 
-    validacao_Id();
+        idCriar = validacao_Id();
 
-    validacao_Nome_Usuario();
+        validacao_Nome_Usuario();
 
-    validacao_Email(email);
+        validacao_Email(email);
 
-    printf("Digite a senha: ");
-    scanf("%s", senha);
+        printf("Digite a senha: ");
+        scanf("%s", senha);
 
-    sprintf(nomeArquivoUsuario, "BD/usuarios/%d.txt", numeroId);
-    usuario = fopen(nomeArquivoUsuario, "w");
+        sprintf(nomeArquivoUsuario, "BD/usuarios/%d.txt", idCriar);
+        usuario = fopen(nomeArquivoUsuario, "w");
 
-    fprintf(mestre, "\n%d %d %s %s %s", 0, numeroId, nomeUsuario, senha, email);
+        fprintf(mestre, "%d %d %s %s %s\n", 0, numeroId, nomeUsuario, senha, email);
 
-    if (numeroId > 0){
-        numeroId++;
+        if (numeroId > 0){
+            numeroId++;
+        }
+        
+        fprintf(contada, "%d", numeroId);
+
+        fclose(contada);
+        fclose(usuario);
+        fclose(mestre);
+        menu_Conta();
     }
-    
-    fprintf(contada, "%d", numeroId);
-
-    fclose(contada);
-    fclose(usuario);
-    fclose(mestre);
-    menu_Conta();
 }
 
 void opcoes_Menu_Conta(){
@@ -772,13 +786,13 @@ void menu_Conta(){
         deslogar();
         break;
     case 3:
-        usuario_Excluir_Usuario(idUsuarioLogado);
+        usuario_Excluir_Usuario();
         break;
     case 4:
         menu_Biblioteca(idUsuarioLogado);
         break;
     case 6822:
-        adm_Excluir_Usuarios();
+        adm_Excluir_Usuarios(idUsuarioLogado);
         break;
     case 6823:
         consultar_Cadastros(idUsuarioLogado);
@@ -828,10 +842,10 @@ void menu_Biblioteca(int id){
         encerrar_Codigo();
         break;
     case 1113:
-        registrarLivro();
+        registrarLivro(id);
         break;
     case 1114:
-        apagarregistro();
+        apagarregistro(id);
         break;
 
     default:
