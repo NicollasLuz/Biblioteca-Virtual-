@@ -727,9 +727,9 @@ void adm_Criar_Comta(int id){
 
     if (numeroId > 0){
         numeroId++;
-        fprintf(contada, "%d", numeroId);
     }
     
+    fprintf(contada, "%d", numeroId);
 
     fclose(contada);
     fclose(usuario);
