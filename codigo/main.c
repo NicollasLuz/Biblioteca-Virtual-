@@ -88,7 +88,7 @@ void criarConta() {
     FILE *usuario;
     char nomeArquivoUsuario[20];
 
-    validacao_Nome_Usuario(nomeUsuario);
+    validacao_Nome_Usuario();
 
     validacao_Email(email);
 
@@ -381,7 +381,6 @@ void devolução(int id)
     menu_Biblioteca(id);
 }
 
-
 void apagarregistro()
 {
     char lixo;
@@ -397,7 +396,6 @@ void apagarregistro()
         printf("%s| %s| %s| Ano de lançamento: %d | Quantidade Disponível: %d | (%d)", livro.titulo, livro.autor, livro.genero, livro.ano, livro.quantidade, linha);
         linha++;
     }
-
 
     rewind(arq);
     int contador = 1;
@@ -607,7 +605,7 @@ void adm_Excluir_Usuarios(){
     FILE *mestre = fopen("BD/arquivoMestre.txt", "r"), *mestreTemp;
     mestreTemp = fopen("BD/mestreTemp.txt", "w");
 
-    char nomeArquivoUsuarioExcluir[20], nomeTemp[100], senhaTemp[50], emailTemp[100], teste[21] ="BD/arquivoMestre.txt";
+    char nomeArquivoUsuarioExcluir[20], nomeTemp[100], senhaTemp[50], emailTemp[100];
     int autorizacao, idTemp, statusUsuario, idExcluir;
     
     printf("Digite o id do usuario em que voce deseja excluir: ");
@@ -650,13 +648,38 @@ void adm_Excluir_Usuarios(){
             menu_Conta();
         }
     } else{
+        fclose(mestre);
+        fclose(mestreTemp);
         menu_Conta();
     }
 }
 
-// void consultar Dados (pegar a função do BB)(){
-    
-// }
+void consultar_Cadastros(int id){
+    FILE *mestre = fopen("BD/arquivoMestre.txt", "r");
+
+    char nomeTemp[100], senhaTemp[50], emailTemp[100];
+    int idTemp, statusUsuarioTemp;
+
+    if (mestre == NULL)
+        printf("Erro ao abrir o arquivo de cadastros ");
+
+    limpar_Tela();
+
+    if(id < 0){
+        while(fscanf(mestre, "%d %d %s %s %s ", &statusUsuarioTemp, &idTemp, nomeTemp, senhaTemp, emailTemp) != EOF){
+            printf("Status: %d | ID: %d | Nome: %s | Email: %s\n", statusUsuarioTemp, idTemp, nomeTemp, emailTemp);
+        }
+        fclose(mestre);
+        continuar();
+        menu_Conta();
+    }
+    else {
+        printf("Opcao inexistente!!");
+        continuar();
+        menu_Conta();
+    }
+}
+
 
 void opcoes_Menu_Conta(){
     printf("===Menu Contas===\n");
@@ -670,13 +693,14 @@ void opcoes_Menu_Conta_Adm(){
     opcoes_Menu_Conta();
     printf("6822. Excluir usuarios\n");
     printf("6823. Consultar cadastros\n");
+    printf("6824. Criar conta\n");
 }
 
 void menu_Conta(){
     limpar_Tela();
     int opcao;
     
-    if (idUsuarioLogado == -99) {
+    if (idUsuarioLogado < 0) {
         opcoes_Menu_Conta_Adm();
         opcao = Ler_Opcoes();
     } else {
@@ -701,7 +725,10 @@ void menu_Conta(){
         adm_Excluir_Usuarios();
         break;
     case 6823:
-        //função consultar dados
+        consultar_Cadastros(idUsuarioLogado);
+        break;
+    case 6824:
+        adm_Criar_Comta(idUsuarioLogado);
         break;
     
     default:
@@ -716,7 +743,7 @@ void menu_Biblioteca(int id){
     limpar_Tela();
 
     int opcao;
-    if (id == -99) {
+    if (id < 0) {
         opcoes_Menu_Biblioteca_Adm();
         opcao = Ler_Opcoes();
     } else {
