@@ -679,7 +679,63 @@ void consultar_Cadastros(int id){
         menu_Conta();
     }
 }
+void validacao_Id(){
+    FILE* mestre = fopen("BD/arquivoMestre.txt", "r");
 
+    int idValido = 0, idValidacao, statusPreencher;//idPrencher é so pra ler no arquivo pq eu to com preguiça de dar uma volta pra ler so o nome, na vdd todos prencher no final é so pra preencher
+    char nomeUsuarioValidacao[100], senhaPreencher[50], emailPreencher[100];
+
+    while (!idValido) {
+        printf("Insira o id do usuario (se for usuario adm inserir id < 0 e > -100)");
+        scanf("%d", &numeroId);
+
+        idValido = 1;
+
+        rewind(mestre);
+
+        while (fscanf(mestre, "%d %d %s %s %s", &statusPreencher, &idValidacao, &nomeUsuarioValidacao, & senhaPreencher, &emailPreencher) != EOF){
+            if (numeroId == idValidacao){
+                limpar_Tela();
+                printf("Esse id ja existe! Insira outro\n");
+                idValido = 0;
+                break;
+            }
+        }
+    }
+    fclose(mestre);
+}
+
+void adm_Criar_Comta(int id){
+    FILE* contada = fopen("BD/contador.txt", "w");
+    FILE* mestre = fopen("BD/arquivoMestre.txt", "a+");
+    FILE *usuario;
+    char nomeArquivoUsuario[20];
+
+    validacao_Id();
+
+    validacao_Nome_Usuario();
+
+    validacao_Email(email);
+
+    printf("Digite a senha: ");
+    scanf("%s", senha);
+
+    sprintf(nomeArquivoUsuario, "BD/usuarios/%d.txt", numeroId);
+    usuario = fopen(nomeArquivoUsuario, "w");
+
+    fprintf(mestre, "\n%d %d %s %s %s", 0, numeroId, nomeUsuario, senha, email);
+
+    if (numeroId > 0){
+        numeroId++;
+        fprintf(contada, "%d", numeroId);
+    }
+    
+
+    fclose(contada);
+    fclose(usuario);
+    fclose(mestre);
+    menu_Conta();
+}
 
 void opcoes_Menu_Conta(){
     printf("===Menu Contas===\n");
@@ -798,9 +854,6 @@ int main(){
     } else {
         fscanf(contagem, "%d", &numeroId);
         fclose(contagem);
-
-        strcpy(nomeUsuario, "nike");
-        strcpy(senha, "123");
 
         menu_Principal();
     }
