@@ -4,6 +4,6 @@
 0 3 galinha galo pintadinha@gmial.com
 0 4 mareleide marieleide123 marileide@yahoo.com.br
 0 5 lente quadrado retangulo@gmail.com
-0 6 BestSeller goiania a249420@dac.unicamp.br
+0 6 BestSeller goiania tutu@gmail.com
 0 -97 adminSabido sabedoria admin@sabido.com
 0 -98 nike nike123 nike@gmail.com
