@@ -1,4 +1,9 @@
-Capitães de Areia |Jorge Amado |Romance |1976|8
-Diario de um Banana |Greg |Comedia |20077|28
-Teste |testador |testante |1845|7
-boi bumba |folclore |pog |2999|1
+A vida Não é Util |Ailton Krenak |Filosofia |2020|6
+Capitães de Areia |Jorge Amado |Romance |1937|10
+Diario de um Banana |Jeff Kinney |Comédia |2007|1
+Metamorfose |Franz Kafka |Ficção |1915|9
+Hobbit |Tolkien |Ficção |1937|10
+O Pequeno Principe |Antoine |Ficção |1943|2
+Zac Power |HI Larry |Ficção |2014|23
+A Revolução dos Bichos |George Orwell |Ficção |1945|10
+Jogos Vorazes | Suzanne Collins | Ficção | 2008 | 5

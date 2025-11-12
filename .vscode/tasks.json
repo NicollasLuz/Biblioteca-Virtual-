@@ -9,7 +9,12 @@
                 "-g",
                 "${file}",
                 "-o",
-                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+                "${fileDirname}\\${fileBasenameNoExtension}.exe",
+                "-IC:/libs/curl/include",
+                "-LC:/libs/curl/lib",
+                "-lcurl",
+                "-lws2_32",
+                "-lcrypt32"
             ],
             "options": {
                 "cwd": "${fileDirname}"
