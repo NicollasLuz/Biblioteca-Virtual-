@@ -14,7 +14,7 @@ void limpar_Tela(){
 }
 
 void continuar(){
-    printf("\nPressione para continuar!");
+    printf("\nPressione enter para continuar!");
     fgetchar();
     fgetchar();
 }
