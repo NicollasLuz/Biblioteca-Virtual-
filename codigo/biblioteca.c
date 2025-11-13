@@ -269,6 +269,7 @@ void emprestimo(int id)
         emprestimo(id);
     }
 
+    continuar();
     menu_Biblioteca(id);
 }
 
