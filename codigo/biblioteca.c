@@ -59,7 +59,7 @@ void validacao_Email(){
 void validacao_Nome_Usuario(){
     FILE* mestre = fopen("BD/arquivoMestre.txt", "r");
 
-    int nomeValido = 0, idPreencher, statusPreencher;//idPrencher é so pra ler no arquivo pq eu to com preguiça de dar uma volta pra ler so o nome, na vdd todos prencher no final é so pra preencher
+    int nomeValido = 0, idPreencher, statusPreencher;
     char nomeUsuarioValidacao[100], senhaPreencher[50], emailPreencher[100];
 
     while (!nomeValido) {
@@ -693,7 +693,7 @@ void consultar_Cadastros(int id){
 int validacao_Id(){
     FILE* mestre = fopen("BD/arquivoMestre.txt", "r");
 
-    int idValido = 0, idValidacao, statusPreencher, id;//idPrencher é so pra ler no arquivo pq eu to com preguiça de dar uma volta pra ler so o nome, na vdd todos prencher no final é so pra preencher
+    int idValido = 0, idValidacao, statusPreencher, id;
     char nomeUsuarioValidacao[100], senhaPreencher[50], emailPreencher[100];
 
     while (!idValido) {
@@ -874,9 +874,6 @@ void start()
     } else {
         fscanf(contagem, "%d", &numeroId);
         fclose(contagem);
-
-        strcpy(nomeUsuario, "nike");
-        strcpy(senha, "123");
 
         menu_Principal();
     }
